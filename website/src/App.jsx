@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import './App.css'
 
-const BULK_LOGO_URL = 'https://www.b4traders.com/vite/assets/logo-a1f2338e.png'
+const BRAND_NAME = 'wholelot traders'
 
 const SORT_OPTIONS = [
   { label: 'Sort by: Time Left', sortBy: '+end_date', selectedSortBy: 'end_date_l_h' },
@@ -193,7 +193,10 @@ function App() {
         <button className="icon-menu" type="button" aria-label="Open menu">
           ☰
         </button>
-        <img src={BULK_LOGO_URL} alt="Bulk4Traders" className="brand-logo" />
+        <div className="brand-logo" role="img" aria-label="wholelot traders">
+          <span className="brand-text">wholelot</span>
+          <span className="brand-text-second">traders</span>
+        </div>
         <div className="topbar-actions">
           <button type="button" className="action-btn sign-in">SIGN IN</button>
           <button type="button" className="action-btn language-btn">SELECT LANGUAGE ▼</button>
@@ -426,7 +429,10 @@ function App() {
 
       <footer className="footer">
         <div className="footer-brand">
-          <img src={BULK_LOGO_URL} alt="Bulk4Traders" />
+          <div className="brand-logo footer-logo" role="img" aria-label="wholelot traders">
+            <span className="brand-text">wholelot</span>
+            <span className="brand-text-second">traders</span>
+          </div>
         </div>
         <div className="footer-links">
           <a href="#">About Us</a>
@@ -440,7 +446,7 @@ function App() {
         </div>
         <div className="footer-contact">
           <p>📞 1800-419-0431</p>
-          <p>✉ support@b4traders.com</p>
+          <p>✉ support@wholelottraders.com</p>
         </div>
       </footer>
 

@@ -3,6 +3,7 @@
   color: #173568;
   background: #f8f9fb;
   min-height: 100vh;
+  font-size: 14px;
 }
 
 .topbar {
@@ -12,7 +13,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 12px;
+  padding: 8px 12px;
   background: #fff;
   border-bottom: 1px solid #ddd;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
@@ -28,9 +29,40 @@
 }
 
 .brand-logo {
-  width: 160px;
-  height: auto;
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
   margin-right: auto;
+  user-select: none;
+}
+
+.brand-text {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  color: #173568;
+}
+
+.brand-text-second {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #2e6dd7;
+  margin-top: 2px;
+}
+
+.footer-logo {
+  margin-right: 0;
+}
+
+.footer-logo .brand-text {
+  font-size: 24px;
+}
+
+.footer-logo .brand-text-second {
+  font-size: 16px;
+  letter-spacing: 4px;
 }
 
 .topbar-actions {
@@ -43,8 +75,8 @@
   background: #fff;
   color: #1c3e7f;
   border-radius: 6px;
-  font-size: 18px;
-  padding: 10px 14px;
+  font-size: 13px;
+  padding: 7px 12px;
   cursor: pointer;
 }
 
@@ -55,17 +87,17 @@
 
 .layout {
   display: grid;
-  grid-template-columns: 180px 1fr;
+  grid-template-columns: 240px 1fr;
   gap: 16px;
-  max-width: 1900px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 14px 10px 0;
+  padding: 14px 16px 0;
 }
 
 .sidebar {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 10px;
 }
 
 .filters-heading-row {
@@ -76,33 +108,34 @@
 }
 
 .filters-heading-row h3 {
-  font-size: 30px;
+  font-size: 18px;
   color: #2a2a2a;
   margin: 0;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .clear-btn {
   border: none;
   background: transparent;
   color: #333;
-  font-size: 24px;
+  font-size: 13px;
   cursor: pointer;
 }
 
 .filter-section {
   background: #fff;
   border-radius: 4px;
-  padding: 12px 12px 10px;
+  padding: 12px;
 }
 
 .filter-section h4 {
-  margin: 0 0 12px;
+  margin: 0 0 10px;
   color: #2d2d2d;
-  font-weight: 500;
-  font-size: 34px;
-  letter-spacing: -0.2px;
-  line-height: 1;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.2px;
+  line-height: 1.2;
+  text-transform: uppercase;
 }
 
 .check-row {
@@ -110,9 +143,9 @@
   gap: 8px;
   align-items: flex-start;
   color: #525252;
-  font-size: 34px;
-  margin-bottom: 10px;
-  line-height: 1.1;
+  font-size: 13px;
+  margin-bottom: 8px;
+  line-height: 1.2;
 }
 
 .check-row input {
@@ -137,7 +170,7 @@
 }
 
 .price-values span {
-  font-size: 22px;
+  font-size: 14px;
   color: #5e5e5e;
   border: 1px solid #d5d5d5;
   border-radius: 6px;
@@ -162,27 +195,27 @@
 
 .search-row {
   display: grid;
-  grid-template-columns: 1fr 180px;
-  gap: 18px;
+  grid-template-columns: 1fr 140px;
+  gap: 12px;
   align-items: center;
 }
 
 .search-row input {
-  height: 78px;
+  height: 48px;
   border: 1px solid #b8b8b8;
   border-radius: 4px;
-  padding: 0 18px;
-  font-size: 36px;
+  padding: 0 14px;
+  font-size: 15px;
   color: #474747;
 }
 
 .search-row button {
-  height: 78px;
+  height: 48px;
   border: none;
   border-radius: 8px;
   background: #2e6dd7;
   color: #fff;
-  font-size: 30px;
+  font-size: 14px;
   letter-spacing: 0.3px;
   cursor: pointer;
   box-shadow: 0 2px 7px rgba(20, 83, 188, 0.35);
@@ -197,18 +230,18 @@
 }
 
 .sort-row p {
-  font-size: 39px;
+  font-size: 18px;
   color: #2d2d2d;
 }
 
 .sort-row select {
-  min-width: 260px;
-  height: 42px;
+  min-width: 200px;
+  height: 36px;
   border: 1px solid #c9c9c9;
   border-radius: 4px;
   padding: 0 10px;
   color: #4d4d4d;
-  font-size: 18px;
+  font-size: 14px;
 }
 
 .error,
@@ -216,7 +249,7 @@
   background: #fff;
   border-radius: 6px;
   padding: 12px 14px;
-  font-size: 22px;
+  font-size: 14px;
   margin-bottom: 12px;
 }
 
@@ -227,7 +260,7 @@
 .cards-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 24px;
+  gap: 16px;
 }
 
 .product-card {
@@ -277,9 +310,9 @@
 }
 
 .product-card h2 {
-  margin: 12px 0 8px;
-  font-size: 18px;
-  line-height: 1.32;
+  margin: 10px 0 6px;
+  font-size: 15px;
+  line-height: 1.3;
   color: #143a7a;
   font-weight: 700;
 }
@@ -288,8 +321,8 @@
   display: flex;
   justify-content: space-between;
   gap: 8px;
-  margin-bottom: 6px;
-  font-size: 18px;
+  margin-bottom: 4px;
+  font-size: 13px;
 }
 
 .spec-row span {
@@ -319,12 +352,12 @@
 
 .pagination button,
 .pagination .dots {
-  min-width: 44px;
-  height: 44px;
+  min-width: 36px;
+  height: 36px;
   border-radius: 8px;
   border: 1px solid transparent;
   background: transparent;
-  font-size: 20px;
+  font-size: 14px;
   color: #222;
 }
 
@@ -345,30 +378,26 @@
   margin-top: 12px;
   background: #f3f3f3;
   border-top: 1px solid #e2e2e2;
-  padding: 30px 55px;
+  padding: 24px 32px;
   display: grid;
   grid-template-columns: 1.2fr 1fr 1fr 1fr;
   gap: 24px;
   color: #173e79;
 }
 
-.footer-brand img {
-  width: 310px;
-  max-width: 100%;
-}
 
 .footer-links,
 .footer-contact {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   justify-content: center;
 }
 
 .footer a,
 .footer p {
   color: #173e79;
-  font-size: 18px;
+  font-size: 14px;
   text-decoration: none;
   margin: 0;
 }
@@ -392,7 +421,7 @@
 
 @media (max-width: 1400px) {
   .layout {
-    grid-template-columns: 170px 1fr;
+    grid-template-columns: 220px 1fr;
   }
 
   .cards-grid {
@@ -405,13 +434,18 @@
     padding: 10px;
   }
 
-  .brand-logo {
-    width: 130px;
+  .brand-text {
+    font-size: 18px;
+  }
+
+  .brand-text-second {
+    font-size: 11px;
+    letter-spacing: 2px;
   }
 
   .action-btn {
     font-size: 12px;
-    padding: 8px 10px;
+    padding: 6px 10px;
   }
 
   .layout {
@@ -433,12 +467,12 @@
 
   .search-row input,
   .search-row button {
-    height: 48px;
-    font-size: 16px;
+    height: 44px;
+    font-size: 15px;
   }
 
   .sort-row p {
-    font-size: 20px;
+    font-size: 16px;
   }
 
   .cards-grid {
@@ -448,7 +482,7 @@
 
   .filter-section h4,
   .check-row {
-    font-size: 18px;
+    font-size: 13px;
   }
 
   .footer {
