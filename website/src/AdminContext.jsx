@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext, useState, useEffect } from 'react'
 
 const AdminContext = createContext(null)
 
@@ -7,9 +7,20 @@ export function AdminProvider({ children }) {
     return sessionStorage.getItem('admin_auth') === 'true'
   })
   const [priceHike, setPriceHike] = useState(() => {
-    const saved = sessionStorage.getItem('admin_price_hike')
-    return saved ? Number(saved) : 0
+    const saved = localStorage.getItem('admin_price_hike') || sessionStorage.getItem('admin_price_hike')
+    return saved !== null && saved !== '' ? Number(saved) : 0
   })
+
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === 'admin_price_hike') {
+        const val = e.newValue !== null && e.newValue !== '' ? Number(e.newValue) : 0
+        setPriceHike(isNaN(val) ? 0 : val)
+      }
+    }
+    window.addEventListener('storage', handleStorageChange)
+    return () => window.removeEventListener('storage', handleStorageChange)
+  }, [])
 
   const login = (username, password) => {
     if (username === 'gopi' && password === 'gopi12') {
@@ -26,17 +37,25 @@ export function AdminProvider({ children }) {
   }
 
   const updatePriceHike = (value) => {
+    if (value === '' || value === null || value === undefined) {
+      setPriceHike(0)
+      localStorage.setItem('admin_price_hike', '0')
+      sessionStorage.setItem('admin_price_hike', '0')
+      return
+    }
     const num = Number(value)
-    if (num >= 1 && num <= 100) {
+    if (!isNaN(num) && num >= 0 && num <= 100) {
       setPriceHike(num)
+      localStorage.setItem('admin_price_hike', String(num))
       sessionStorage.setItem('admin_price_hike', String(num))
     }
   }
 
   const applyPriceHike = (price) => {
-    if (!price || typeof price !== 'number') return price
-    if (priceHike <= 0) return price
-    return Math.round(price * (1 + priceHike / 100))
+    const numPrice = Number(price)
+    if (isNaN(numPrice) || numPrice <= 0) return price
+    if (!priceHike || priceHike <= 0) return numPrice
+    return Math.round(numPrice * (1 + priceHike / 100))
   }
 
   return (

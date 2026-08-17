@@ -109,7 +109,7 @@ function AdminPanel() {
           <input
             id="price-hike"
             type="number"
-            min="1"
+            min="0"
             max="100"
             value={priceHike}
             onChange={(e) => updatePriceHike(e.target.value)}
@@ -125,7 +125,7 @@ function AdminPanel() {
 }
 
 function ShopPage() {
-  const { formatMoney, applyPriceHike } = usePrice()
+  const { formatMoney, formatRawMoney, applyPriceHike } = usePrice()
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -459,7 +459,7 @@ function ShopPage() {
                   <h2>{product.lot_name}</h2>
 
                   <div className="spec-row"><span>Quantity</span><strong>{product.items_count} items</strong></div>
-                  <div className="spec-row"><span>MRP</span><strong>{formatMoney(product.mrp)}</strong></div>
+                  <div className="spec-row"><span>MRP</span><strong>{formatRawMoney(product.mrp)}</strong></div>
                   <div className="spec-row"><span>Floor Price</span><strong>{formatMoney(product.floor_price)}</strong></div>
 
                   <div className="shipping-row">
