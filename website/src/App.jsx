@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
-import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, useNavigate, useParams, Link } from 'react-router-dom'
 import { AdminProvider, useAdmin } from './AdminContext'
 import { usePrice } from './usePrice'
+import LandingPage from './LandingPage'
+import MarketplacesPage from './MarketplacesPage'
 import './App.css'
 import './Admin.css'
 
@@ -13,11 +15,13 @@ const SORT_OPTIONS = [
 ]
 
 function formatTime(seconds) {
-  if (!seconds || seconds < 0) return '0 Hr 0 Min 0 Sec'
+  if (!seconds || seconds <= 0) return '0 Hr 00 Min 00 Sec'
   const h = Math.floor(seconds / 3600)
   const m = Math.floor((seconds % 3600) / 60)
   const s = Math.floor(seconds % 60)
-  return `${h} Hr ${m} Min ${s} Sec`
+  const mStr = String(m).padStart(2, '0')
+  const sStr = String(s).padStart(2, '0')
+  return `${h} Hr ${mStr} Min ${sStr} Sec`
 }
 
 function toggleInArray(list, value) {
@@ -125,6 +129,7 @@ function AdminPanel() {
 }
 
 function ShopPage() {
+  const { orgName } = useParams()
   const { formatMoney, formatRawMoney, applyPriceHike } = usePrice()
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(false)
@@ -195,7 +200,8 @@ function ShopPage() {
           search_text: searchText,
           page,
           perPage: 24,
-          sort_by: selectedSort.sortBy
+          sort_by: selectedSort.sortBy,
+          ...(orgName && { organization_name: orgName })
         },
         sort: selectedSort.sortBy,
         lot_type: 'Hybrid',
@@ -203,7 +209,8 @@ function ShopPage() {
         page_size: 24,
         page_number: page,
         page,
-        per_page: 24
+        per_page: 24,
+        ...(orgName && { organization_name: orgName })
       }
 
       try {
@@ -218,7 +225,12 @@ function ShopPage() {
         }
 
         const data = await res.json()
-        setProducts(data?.results || [])
+        const now = Date.now()
+        const results = (data?.results || []).map((p) => ({
+          ...p,
+          endTime: typeof p.bid_remaining_time === 'number' ? now + p.bid_remaining_time * 1000 : null
+        }))
+        setProducts(results)
         setMeta({
           current_page: data?.meta?.current_page || page,
           total_pages: data?.meta?.total_pages || 1,
@@ -241,8 +253,29 @@ function ShopPage() {
     selectedSubCategories,
     priceFrom,
     priceTo,
-    page
+    page,
+    orgName
   ])
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const now = Date.now()
+      setProducts((prevProducts) => {
+        if (!prevProducts || !prevProducts.length) return prevProducts
+        let hasChanged = false
+        const nextProducts = prevProducts.map((p) => {
+          if (!p.endTime) return p
+          const remaining = Math.max(0, Math.floor((p.endTime - now) / 1000))
+          if (p.bid_remaining_time === remaining) return p
+          hasChanged = true
+          return { ...p, bid_remaining_time: remaining }
+        })
+        return hasChanged ? nextProducts : prevProducts
+      })
+    }, 1000)
+
+    return () => clearInterval(timer)
+  }, [])
 
   const visiblePages = useMemo(
     () => buildVisiblePages(meta.current_page, meta.total_pages),
@@ -277,10 +310,10 @@ function ShopPage() {
         <button className="icon-menu" type="button" aria-label="Open menu">
           ☰
         </button>
-        <div className="brand-logo" role="img" aria-label="wholelot traders">
+        <Link to="/" className="brand-logo" role="img" aria-label="wholelot traders" style={{ textDecoration: 'none' }}>
           <span className="brand-text">wholelot</span>
           <span className="brand-text-second">traders</span>
-        </div>
+        </Link>
         <div className="topbar-actions">
           <button type="button" className="action-btn sign-in">SIGN IN</button>
           <button type="button" className="action-btn language-btn">SELECT LANGUAGE ▼</button>
@@ -546,7 +579,10 @@ export default function App() {
     <BrowserRouter>
       <AdminProvider>
         <Routes>
-          <Route path="/" element={<ShopPage />} />
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/products" element={<ShopPage />} />
+          <Route path="/marketplaces" element={<MarketplacesPage />} />
+          <Route path="/:orgName/products" element={<ShopPage />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin" element={<AdminPanel />} />
         </Routes>
