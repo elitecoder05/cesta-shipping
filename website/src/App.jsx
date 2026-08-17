@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
+import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom'
+import { AdminProvider, useAdmin } from './AdminContext'
+import { usePrice } from './usePrice'
 import './App.css'
-
-const BRAND_NAME = 'wholelot traders'
+import './Admin.css'
 
 const SORT_OPTIONS = [
   { label: 'Sort by: Time Left', sortBy: '+end_date', selectedSortBy: 'end_date_l_h' },
@@ -18,11 +20,6 @@ function formatTime(seconds) {
   return `${h} Hr ${m} Min ${s} Sec`
 }
 
-function formatMoney(value) {
-  if (typeof value !== 'number') return '-'
-  return `₹ ${value.toLocaleString('en-IN')}`
-}
-
 function toggleInArray(list, value) {
   if (list.includes(value)) return list.filter((x) => x !== value)
   return [...list, value]
@@ -32,19 +29,103 @@ function buildVisiblePages(current, total) {
   if (total <= 7) {
     return Array.from({ length: total }, (_, i) => i + 1)
   }
-
   if (current <= 4) {
     return [1, 2, 3, 4, 5, '...', total]
   }
-
   if (current >= total - 3) {
     return [1, '...', total - 4, total - 3, total - 2, total - 1, total]
   }
-
   return [1, '...', current - 1, current, current + 1, '...', total]
 }
 
-function App() {
+function AdminLogin() {
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const { login } = useAdmin()
+  const navigate = useNavigate()
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    setError('')
+    const success = login(username, password)
+    if (success) {
+      navigate('/admin')
+    } else {
+      setError('Invalid username or password')
+    }
+  }
+
+  return (
+    <div className="admin-login-page">
+      <form className="admin-login-card" onSubmit={handleSubmit}>
+        <h1>Admin Login</h1>
+        {error && <div className="admin-error">{error}</div>}
+        <div className="admin-field">
+          <label htmlFor="username">Username</label>
+          <input
+            id="username"
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+            autoFocus
+          />
+        </div>
+        <div className="admin-field">
+          <label htmlFor="password">Password</label>
+          <input
+            id="password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
+        <button type="submit" className="admin-login-btn">Login</button>
+      </form>
+    </div>
+  )
+}
+
+function AdminPanel() {
+  const { priceHike, updatePriceHike, logout } = useAdmin()
+  const navigate = useNavigate()
+
+  return (
+    <div className="admin-page">
+      <div className="admin-header">
+        <h1>Admin Panel</h1>
+        <button className="admin-logout-btn" onClick={() => { logout(); navigate('/'); }}>Logout</button>
+      </div>
+      <div className="admin-section">
+        <h2>Price Config</h2>
+        <p className="admin-desc">
+          Set a percentage hike to apply to all prices received from the Bulk4Traders API.
+          This will be applied everywhere on the website.
+        </p>
+        <div className="admin-field">
+          <label htmlFor="price-hike">Price Hike Percentage</label>
+          <input
+            id="price-hike"
+            type="number"
+            min="1"
+            max="100"
+            value={priceHike}
+            onChange={(e) => updatePriceHike(e.target.value)}
+          />
+          <span className="admin-unit">%</span>
+        </div>
+        <div className="admin-preview">
+          Current hike: <strong>{priceHike}%</strong>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function ShopPage() {
+  const { formatMoney, applyPriceHike } = usePrice()
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -187,6 +268,9 @@ function App() {
     setSelectedSort(SORT_OPTIONS[0])
   }
 
+  const displayPriceFrom = applyPriceHike(priceFrom)
+  const displayPriceTo = applyPriceHike(priceTo)
+
   return (
     <div className="page">
       <header className="topbar">
@@ -223,8 +307,8 @@ function App() {
           <section className="filter-section">
             <h4>PRICE RANGE</h4>
             <div className="price-values">
-              <span>{priceFrom}</span>
-              <span>{priceTo}</span>
+              <span>{displayPriceFrom.toLocaleString('en-IN')}</span>
+              <span>{displayPriceTo.toLocaleString('en-IN')}</span>
             </div>
             <div className="price-sliders">
               <input
@@ -457,4 +541,16 @@ function App() {
   )
 }
 
-export default App
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AdminProvider>
+        <Routes>
+          <Route path="/" element={<ShopPage />} />
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin" element={<AdminPanel />} />
+        </Routes>
+      </AdminProvider>
+    </BrowserRouter>
+  )
+}
