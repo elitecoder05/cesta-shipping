@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import Header from './Header'
 import './MarketplacesPage.css'
 
 export default function MarketplacesPage() {
@@ -27,18 +28,7 @@ export default function MarketplacesPage() {
 
   return (
     <div className="marketplaces-page">
-      <header className="topbar">
-        <button className="icon-menu" type="button" aria-label="Open menu">
-          ☰
-        </button>
-        <Link to="/" className="brand-logo" role="img" aria-label="wholelot traders" style={{ textDecoration: 'none' }}>
-          <span className="brand-text">wholelot</span>
-          <span className="brand-text-second">traders</span>
-        </Link>
-        <div className="topbar-actions">
-          <button type="button" className="action-btn sign-in">SIGN IN</button>
-        </div>
-      </header>
+      <Header />
 
       <main className="marketplaces-main">
         <h1>Leading liquidation marketplaces</h1>

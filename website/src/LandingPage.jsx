@@ -1,22 +1,11 @@
 import { Link } from 'react-router-dom'
+import Header from './Header'
 import './LandingPage.css'
 
 export default function LandingPage() {
   return (
     <div className="landing-page">
-      <header className="topbar">
-        <button className="icon-menu" type="button" aria-label="Open menu">
-          ☰
-        </button>
-        <div className="brand-logo" role="img" aria-label="wholelot traders">
-          <span className="brand-text">wholelot</span>
-          <span className="brand-text-second">traders</span>
-        </div>
-        <div className="topbar-actions">
-          <button type="button" className="action-btn sign-in">SIGN IN</button>
-          <button type="button" className="action-btn language-btn">SELECT LANGUAGE ▼</button>
-        </div>
-      </header>
+      <Header />
 
       <main className="landing-main">
         <div className="hero-section">

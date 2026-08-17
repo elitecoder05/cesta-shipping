@@ -4,6 +4,12 @@ import { AdminProvider, useAdmin } from './AdminContext'
 import { usePrice } from './usePrice'
 import LandingPage from './LandingPage'
 import MarketplacesPage from './MarketplacesPage'
+import ProductDetailPage from './ProductDetailPage'
+import MyAccountPage from './MyAccountPage'
+import AdminOrdersDashboard from './AdminOrdersDashboard'
+import { UserProvider } from './UserContext'
+import Header from './Header'
+import SignInModal from './SignInModal'
 import './App.css'
 import './Admin.css'
 
@@ -100,7 +106,17 @@ function AdminPanel() {
     <div className="admin-page">
       <div className="admin-header">
         <h1>Admin Panel</h1>
-        <button className="admin-logout-btn" onClick={() => { logout(); navigate('/'); }}>Logout</button>
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+          <button
+            type="button"
+            className="admin-login-btn"
+            style={{ marginTop: 0, padding: '8px 16px' }}
+            onClick={() => navigate('/admin/orders')}
+          >
+            📊 Orders Dashboard
+          </button>
+          <button className="admin-logout-btn" onClick={() => { logout(); navigate('/'); }}>Logout</button>
+        </div>
       </div>
       <div className="admin-section">
         <h2>Price Config</h2>
@@ -130,6 +146,7 @@ function AdminPanel() {
 
 function ShopPage() {
   const { orgName } = useParams()
+  const navigate = useNavigate()
   const { formatMoney, formatRawMoney, applyPriceHike } = usePrice()
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(false)
@@ -306,19 +323,7 @@ function ShopPage() {
 
   return (
     <div className="page">
-      <header className="topbar">
-        <button className="icon-menu" type="button" aria-label="Open menu">
-          ☰
-        </button>
-        <Link to="/" className="brand-logo" role="img" aria-label="wholelot traders" style={{ textDecoration: 'none' }}>
-          <span className="brand-text">wholelot</span>
-          <span className="brand-text-second">traders</span>
-        </Link>
-        <div className="topbar-actions">
-          <button type="button" className="action-btn sign-in">SIGN IN</button>
-          <button type="button" className="action-btn language-btn">SELECT LANGUAGE ▼</button>
-        </div>
-      </header>
+      <Header />
 
       <div className="layout">
         <aside className="sidebar">
@@ -473,7 +478,14 @@ function ShopPage() {
           {!loading && (
             <div className="cards-grid">
               {products.map((product) => (
-                <article key={product.id} className="product-card">
+                <article
+                  key={product.id}
+                  className="product-card"
+                  onClick={() => {
+                    const detailPath = orgName ? `/${orgName}/product_detail/${product.id}` : `/product_detail/${product.id}`
+                    navigate(detailPath)
+                  }}
+                >
                   <img src={product.org_image_url} alt="org_image_url" className="org-logo" />
 
                   <div className="timer">⏱ {formatTime(product.bid_remaining_time)}</div>
@@ -578,14 +590,23 @@ export default function App() {
   return (
     <BrowserRouter>
       <AdminProvider>
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/products" element={<ShopPage />} />
-          <Route path="/marketplaces" element={<MarketplacesPage />} />
-          <Route path="/:orgName/products" element={<ShopPage />} />
-          <Route path="/admin/login" element={<AdminLogin />} />
-          <Route path="/admin" element={<AdminPanel />} />
-        </Routes>
+        <UserProvider>
+          <SignInModal />
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/products" element={<ShopPage />} />
+            <Route path="/marketplaces" element={<MarketplacesPage />} />
+            <Route path="/my-account" element={<MyAccountPage />} />
+            <Route path="/product_detail/:id" element={<ProductDetailPage />} />
+            <Route path="/product_detail/:slug/:id" element={<ProductDetailPage />} />
+            <Route path="/:orgName/products" element={<ShopPage />} />
+            <Route path="/:orgName/product_detail/:id" element={<ProductDetailPage />} />
+            <Route path="/:orgName/product_detail/:slug/:id" element={<ProductDetailPage />} />
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/admin" element={<AdminPanel />} />
+            <Route path="/admin/orders" element={<AdminOrdersDashboard />} />
+          </Routes>
+        </UserProvider>
       </AdminProvider>
     </BrowserRouter>
   )
