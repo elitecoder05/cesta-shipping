@@ -5,6 +5,51 @@ import { usePrice } from './usePrice'
 import Header from './Header'
 import './MyAccountPage.css'
 
+function LotTimer({ endDate }) {
+  const [timeLeft, setTimeLeft] = useState('')
+  const [isExpired, setIsExpired] = useState(false)
+
+  useEffect(() => {
+    if (!endDate) {
+      setTimeLeft('Time N/A')
+      return
+    }
+
+    const targetTime = new Date(endDate).getTime()
+
+    const updateTimer = () => {
+      const now = Date.now()
+      const diff = Math.floor((targetTime - now) / 1000)
+
+      if (isNaN(targetTime) || diff <= 0) {
+        setTimeLeft('0 Hr 00 Min 00 Sec')
+        setIsExpired(true)
+        return
+      }
+
+      setIsExpired(false)
+      const h = Math.floor(diff / 3600)
+      const m = Math.floor((diff % 3600) / 60)
+      const s = Math.floor(diff % 60)
+      const mStr = String(m).padStart(2, '0')
+      const sStr = String(s).padStart(2, '0')
+      setTimeLeft(`${h} Hr ${mStr} Min ${sStr} Sec`)
+    }
+
+    updateTimer()
+    const timer = setInterval(updateTimer, 1000)
+    return () => clearInterval(timer)
+  }, [endDate])
+
+  return (
+    <div className={`lot-timer-badge ${isExpired ? 'expired' : 'active'}`}>
+      <span className="timer-icon">⏳</span>
+      <span className="timer-label">{isExpired ? 'Auction Ended' : 'Time Left:'}</span>
+      <strong className="timer-value">{timeLeft}</strong>
+    </div>
+  )
+}
+
 export default function MyAccountPage() {
   const { user, openSignInModal } = useUser()
   const { formatMoney, formatRawMoney } = usePrice()
@@ -14,28 +59,36 @@ export default function MyAccountPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
+  const fetchMyBids = async (showLoading = true) => {
+    if (!user) return
+    if (showLoading) setLoading(true)
+    setError('')
+    try {
+      const res = await fetch(`/api/bids/my-bids?email=${encodeURIComponent(user.email)}`)
+      if (!res.ok) throw new Error('Failed to fetch submitted bids')
+      const data = await res.json()
+      setBids(data.bids || [])
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      if (showLoading) setLoading(false)
+    }
+  }
+
   useEffect(() => {
     if (!user) {
       setLoading(false)
       return
     }
 
-    const fetchMyBids = async () => {
-      setLoading(true)
-      setError('')
-      try {
-        const res = await fetch(`/api/bids/my-bids?email=${encodeURIComponent(user.email)}`)
-        if (!res.ok) throw new Error('Failed to fetch submitted bids')
-        const data = await res.json()
-        setBids(data.bids || [])
-      } catch (err) {
-        setError(err.message)
-      } finally {
-        setLoading(false)
-      }
-    }
+    fetchMyBids(true)
 
-    fetchMyBids()
+    // Auto refresh bids every 10 seconds to update top bids in real time
+    const interval = setInterval(() => {
+      fetchMyBids(false)
+    }, 10000)
+
+    return () => clearInterval(interval)
   }, [user])
 
   if (!user) {
@@ -86,7 +139,7 @@ export default function MyAccountPage() {
         <div className="account-section">
           <div className="section-title-row">
             <h2>Submitted Bids</h2>
-            <button className="btn-refresh" onClick={() => window.location.reload()}>
+            <button className="btn-refresh" onClick={() => fetchMyBids(true)}>
               🔄 Refresh Bids
             </button>
           </div>
@@ -127,6 +180,10 @@ export default function MyAccountPage() {
                         <h3>{bid.lotName}</h3>
                         <p className="lot-id-sub">Lot ID: {bid.lotId}</p>
                       </div>
+                    </div>
+
+                    <div className="bid-timer-container">
+                      <LotTimer endDate={bid.endDate} />
                     </div>
 
                     <div className="bid-amounts-row">

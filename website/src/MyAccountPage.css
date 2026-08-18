@@ -306,6 +306,42 @@
   color: #0f172a;
 }
 
+.bid-timer-container {
+  padding: 0 16px 12px;
+}
+
+.lot-timer-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.lot-timer-badge.active {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1e40af;
+}
+
+.lot-timer-badge.expired {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+}
+
+.timer-label {
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.timer-value {
+  font-weight: 800;
+  margin-left: auto;
+  font-family: monospace, sans-serif;
+}
+
 .bid-card-footer {
   padding: 12px 16px;
   background: #f8fafc;
